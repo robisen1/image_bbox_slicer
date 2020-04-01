@@ -2,11 +2,13 @@
 Helper functions for ``image_bbox_slicer``.
 """
 import os
+import sys
 import glob
 import warnings
 import numpy as np
 from PIL import Image
 from enum import Enum
+from pathlib import Path, PurePath
 from itertools import compress
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -137,8 +139,18 @@ def validate_file_names(img_src, ann_src):
     Exception
         If `img_src` and `ann_src` do not have matching image and annotation file names respectively.
     """
-    imgs = sorted(glob.glob(img_src + '/*'))
-    anns = sorted(glob.glob(ann_src + '/*.xml'))
+    
+    print("this is what imgs looks like before processing: ", img_src)
+    
+    
+    
+    imgs = sorted(PurePath(glob.glob(img_src + '/*')))
+    
+    anns = PurePath(sorted(glob.glob(ann_src + '/*.xml')))
+    
+    # for debugging
+    print("image source :" , imgs)
+    sys.exit()
 
     imgs_filter = [True if x.split(
         '.')[-1].lower() in IMG_FORMAT_LIST else False for x in imgs]
@@ -146,7 +158,10 @@ def validate_file_names(img_src, ann_src):
 
     imgs = [x.split('/')[-1].split('.')[-2] for x in imgs]
     anns = [x.split('/')[-1].split('.')[-2] for x in anns]
-
+    
+    print("this is image name :", imgs)
+    print("this is annotation name :" , anns)
+    
     if not (imgs == anns):
         raise Exception(
             'Each image in `{}` must have its corresponding XML file in `{}` with the same file name.'.format(img_src, ann_src))

@@ -13,5 +13,5 @@ __author__ = 'Akshay Chandra Lagandula'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2019 Akshay Chandra Lagandula'
 
-from .main import *
+from .image_bbox_slicer import *
 from .helpers import *

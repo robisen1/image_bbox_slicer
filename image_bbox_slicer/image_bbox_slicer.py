@@ -3,12 +3,15 @@ Main functionality of ``image_bbox_slicer``.
 """
 import os
 import csv
+import sys
 import glob
 import random
+from pathlib import Path
 from PIL import Image
 from pascal_voc_writer import Writer
+# star imports are bad but maybe necessary here.
 from .helpers import *
-
+# needs path lib
 
 class Slicer(object):
     """
@@ -52,19 +55,30 @@ class Slicer(object):
         ----------
         None
         """
-        self.IMG_SRC = os.getcwd()
-        self.IMG_DST = os.path.join(os.getcwd(), 'sliced_images')
-        self.ANN_SRC = os.getcwd()
-        self.ANN_DST = os.path.join(os.getcwd(), 'sliced_annotations')
+        # self.IMG_SRC = os.getcwd()
+        # self.IMG_DST = os.path.join(os.getcwd(), 'sliced_images')
+        # self.ANN_SRC = os.getcwd()
+        # self.ANN_DST = os.path.join(os.getcwd(), 'sliced_annotations')
+        # self.keep_partial_labels = False
+        # self.save_before_after_map = False
+        # self.ignore_empty_tiles = True
+        # self._ignore_tiles = []
+        # self._just_image_call = True
+        
+        self.IMG_SRC = Path.cwd()
+        self.IMG_DST = Path.cwd() / 'sliced_images'
+        self.ANN_SRC = Path.cwd()
+        self.ANN_DST = Path.cwd() / 'sliced_annotations'
         self.keep_partial_labels = False
         self.save_before_after_map = False
         self.ignore_empty_tiles = True
         self._ignore_tiles = []
-        self._just_image_call = True
+        self._just_image_call = True      
+            
 
     def config_dirs(self, img_src, ann_src,
-                    img_dst=os.path.join(os.getcwd(), 'sliced_images'),
-                    ann_dst=os.path.join(os.getcwd(), 'sliced_annotations')):
+                    img_dst=Path.cwd() / 'sliced_images',
+                    ann_dst=Path.cwd() / 'sliced_annotations'):
         """Configures paths to source and destination directories after validating them. 
 
         Parameters
@@ -88,12 +102,22 @@ class Slicer(object):
         validate_dir(ann_src)
         validate_dir(img_dst, src=False)
         validate_dir(ann_dst, src=False)
+        
+        print(" this is the image source :" , img_src)
+        print(" the is ann :", ann_src)
+        
+        
         validate_file_names(img_src, ann_src)
+        
+        sys.exit()
+
+        
         self.IMG_SRC = img_src
         self.IMG_DST = img_dst
         self.ANN_SRC = ann_src
         self.ANN_DST = ann_dst
 
+      
     def __get_tiles(self, img_size, tile_size, tile_overlap):
         """Generates a list coordinates of all the tiles after validating the values. 
         Private Method.
@@ -689,3 +713,7 @@ def which_points_lie(label, tile):
 
     else:
         return Points.P4
+    
+if __name__ == '__main__':
+    
+    print("I am being called in a import")
