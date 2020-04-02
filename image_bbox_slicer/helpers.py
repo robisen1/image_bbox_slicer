@@ -8,7 +8,7 @@ import warnings
 import numpy as np
 from PIL import Image
 from enum import Enum
-from pathlib import Path, PurePath
+from pathlib import Path, PurePath, PosixPath
 from itertools import compress
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
@@ -139,29 +139,36 @@ def validate_file_names(img_src, ann_src):
     Exception
         If `img_src` and `ann_src` do not have matching image and annotation file names respectively.
     """
-    
+   
     print("this is what imgs looks like before processing: ", img_src)
     
     
     
-    imgs = sorted(PurePath(glob.glob(img_src + '/*')))
+    imgs = sorted(glob.glob(img_src + '/*'))
+    anns = sorted(glob.glob(ann_src + '/*.xml'))
     
-    anns = PurePath(sorted(glob.glob(ann_src + '/*.xml')))
-    
+    imgs = [i.replace('\\', '/') for i in imgs]
+    anns = [a.replace('\\', '/') for a in imgs]
     # for debugging
+    print("object type for imgs :", type(imgs))
     print("image source :" , imgs)
+    print("anns source  :", anns)
     sys.exit()
 
     imgs_filter = [True if x.split(
         '.')[-1].lower() in IMG_FORMAT_LIST else False for x in imgs]
     imgs = list(compress(imgs, imgs_filter))
 
+    
+    
+    
     imgs = [x.split('/')[-1].split('.')[-2] for x in imgs]
     anns = [x.split('/')[-1].split('.')[-2] for x in anns]
     
     print("this is image name :", imgs)
     print("this is annotation name :" , anns)
     
+    #sys.exit()
     if not (imgs == anns):
         raise Exception(
             'Each image in `{}` must have its corresponding XML file in `{}` with the same file name.'.format(img_src, ann_src))
