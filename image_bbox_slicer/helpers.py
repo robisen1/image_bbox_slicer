@@ -102,6 +102,7 @@ def validate_dir(dir_path, src=True):
         If `src` is `False` and `dir_path` directory either doesn't exist or already has files.
     """
     if src:
+        print("file not found checked")
         if os.path.isdir(dir_path):
             if not os.listdir(dir_path):
                 raise FileNotFoundError(
@@ -110,6 +111,7 @@ def validate_dir(dir_path, src=True):
             raise FileNotFoundError(
                 'Source directory {} not found.'.format(dir_path))
     else:
+        print("file not found checked")
         if os.path.isdir(dir_path):
             if os.listdir(dir_path):
                 warnings.warn(
@@ -140,35 +142,32 @@ def validate_file_names(img_src, ann_src):
         If `img_src` and `ann_src` do not have matching image and annotation file names respectively.
     """
    
-    print("this is what imgs looks like before processing: ", img_src)
-    
-    
-    
+    # print("this is what imgs looks like before processing: ", img_src)
+    # current code does not handle white space in file name. 
+        
     imgs = sorted(glob.glob(img_src + '/*'))
     anns = sorted(glob.glob(ann_src + '/*.xml'))
-    
+    # for some reason gloc is adding \\ instead of / on windows
     imgs = [i.replace('\\', '/') for i in imgs]
     anns = [a.replace('\\', '/') for a in imgs]
     # for debugging
-    print("object type for imgs :", type(imgs))
-    print("image source :" , imgs)
-    print("anns source  :", anns)
-    sys.exit()
+# =============================================================================
+#     print("object type for imgs :", type(imgs))
+#     print("image source :" , imgs)
+#     print("anns source  :", anns)
+# =============================================================================
+    #sys.exit()
 
     imgs_filter = [True if x.split(
         '.')[-1].lower() in IMG_FORMAT_LIST else False for x in imgs]
     imgs = list(compress(imgs, imgs_filter))
-
-    
-    
     
     imgs = [x.split('/')[-1].split('.')[-2] for x in imgs]
     anns = [x.split('/')[-1].split('.')[-2] for x in anns]
     
-    print("this is image name :", imgs)
-    print("this is annotation name :" , anns)
-    
-    #sys.exit()
+    # print("this is image name :", imgs)
+    # print("this is annotation name :" , anns)
+
     if not (imgs == anns):
         raise Exception(
             'Each image in `{}` must have its corresponding XML file in `{}` with the same file name.'.format(img_src, ann_src))

@@ -166,12 +166,15 @@ class Slicer(object):
         ----------
         None
         """
+        print("called?")
+        sys.exit()
         self._just_image_call = False
         self.slice_bboxes_by_size(tile_size, tile_overlap)
         self.slice_images_by_size(tile_size, tile_overlap)
         self._ignore_tiles = []
         self._just_image_call = True
-
+        
+        print("slice by size")
     def slice_by_number(self, number_tiles):
         """Slices both images and box annotations in source directories into specified number of tiles.
 
@@ -240,6 +243,8 @@ class Slicer(object):
         img_no = 1
 
         for file in sorted(glob.glob(self.IMG_SRC + "/*")):
+            # added to deal with the adding of a \\
+            file = [f.replace('\\', '/') for f in file]
             file_name = file.split('/')[-1].split('.')[0]
             file_type = file.split('/')[-1].split('.')[-1].lower()
             if file_type.lower() not in IMG_FORMAT_LIST:
@@ -320,6 +325,8 @@ class Slicer(object):
         empty_count = 0
 
         for xml_file in sorted(glob.glob(self.ANN_SRC + '/*.xml')):
+            # deal with glob adding a \\
+            xml_file= [x.replace('\\', '/') for x in xml_file]
             root, objects = extract_from_xml(xml_file)
             im_w, im_h = int(root.find('size')[0].text), int(
                 root.find('size')[1].text)
@@ -338,6 +345,7 @@ class Slicer(object):
 
             for tile in tiles:
                 img_no_str = '{:06d}'.format(img_no)
+                print("image no string", img_no_str)
                 voc_writer = Writer('{}'.format(img_no_str), tile_w, tile_h)
                 for obj in objects:
                     obj_lbl = obj[-4:]
@@ -351,39 +359,49 @@ class Slicer(object):
                         new_lbl = (obj_lbl[0] - tile[0], obj_lbl[1] - tile[1],
                                    obj_lbl[2] - tile[0], obj_lbl[3] - tile[1])
 
-                    elif not self.keep_partial_labels:    # Ignore partial labels based on configuration
+                    elif not self.keep_partial_labels:   
+                    # Ignore partial labels based on configuration
+                        print("partial lables: ", keep_partial_labels)
                         empty_count += 1
                         continue
 
                     elif points_info == Points.P1:
+                        print("partial lables: ", keep_partial_labels)
                         new_lbl = (obj_lbl[0] - tile[0], obj_lbl[1] - tile[1],
                                    tile_w, tile_h)
 
                     elif points_info == Points.P2:
+                        print("partial lables: ", keep_partial_labels)
                         new_lbl = (0, obj_lbl[1] - tile[1],
                                    obj_lbl[2] - tile[0], tile_h)
 
                     elif points_info == Points.P3:
+                        print("partial lables: ", keep_partial_labels)
                         new_lbl = (obj_lbl[0] - tile[0], 0,
                                    tile_w, obj_lbl[3] - tile[1])
 
                     elif points_info == Points.P4:
+                        print("partial lables: ", keep_partial_labels)
                         new_lbl = (0, 0, obj_lbl[2] - tile[0],
                                    obj_lbl[3] - tile[1])
 
                     elif points_info == Points.P1_P2:
+                        print("partial lables: ", keep_partial_labels)
                         new_lbl = (obj_lbl[0] - tile[0], obj_lbl[1] - tile[1],
                                    obj_lbl[2] - tile[0], tile_h)
 
                     elif points_info == Points.P1_P3:
+                        print("partial lables: ", keep_partial_labels)
                         new_lbl = (obj_lbl[0] - tile[0], obj_lbl[1] - tile[1],
                                    tile_w, obj_lbl[3] - tile[1])
 
                     elif points_info == Points.P2_P4:
+                        print("partial lables: ", keep_partial_labels)
                         new_lbl = (0, obj_lbl[1] - tile[1],
                                    obj_lbl[2] - tile[0], obj_lbl[3] - tile[1])
 
                     elif points_info == Points.P3_P4:
+                        print("partial lables: ", keep_partial_labels)
                         new_lbl = (obj_lbl[0] - tile[0], 0,
                                    obj_lbl[2] - tile[0], obj_lbl[3] - tile[1])
 
@@ -495,6 +513,8 @@ class Slicer(object):
         """Private Method
         """
         for file in sorted(glob.glob(self.IMG_SRC + "/*")):
+            # added to deal with issue with glob
+            file = [x.replace('\\', '/') for x in file]
             file_name = file.split('/')[-1].split('.')[0]
             file_type = file.split('/')[-1].split('.')[-1].lower()
             if file_type not in IMG_FORMAT_LIST:
@@ -543,6 +563,8 @@ class Slicer(object):
         """Private Method
         """
         for xml_file in sorted(glob.glob(self.ANN_SRC + '/*.xml')):
+            # added to deal with glob issue
+            xml_file= [x.replace('\\', '/') for x in xml_file]
             root, objects = extract_from_xml(xml_file)
             im_w, im_h = int(root.find('size')[0].text), int(
                 root.find('size')[1].text)
@@ -592,8 +614,10 @@ class Slicer(object):
 
         if map_dir is None:
             map_path = self.IMG_DST + '/mapper.csv'
+            print("map path :", map_path)
         else:
             map_path = map_dir + '/mapper.csv'
+            print("map path :", map_path)
         with open(map_path) as src_map:
             read_csv = csv.reader(src_map, delimiter=',')
             # Skip the header
@@ -619,6 +643,9 @@ class Slicer(object):
             However, displays the final plots.
         """
         im_file = random.choice(list(glob.glob('{}/*'.format(self.IMG_SRC))))
+        print("viz resized random :", im_file )
+        #added because of glob
+        im_file= [x.replace('\\', '/') for x in im_file]
         file_name = im_file.split('/')[-1].split('.')[0]
 
         plot_image_boxes(self.IMG_SRC, self.ANN_SRC, file_name)
