@@ -29,6 +29,9 @@ slicer.save_before_after_map = True
 # # window, input can be 480X480 so there is a over lap
 
 slicer.slice_by_size(tile_size=(512,512), tile_overlap=0)
+
+
+
 # slicer.visualize_sliced_random()
 
 

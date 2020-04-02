@@ -102,7 +102,7 @@ def validate_dir(dir_path, src=True):
         If `src` is `False` and `dir_path` directory either doesn't exist or already has files.
     """
     if src:
-        print("file not found checked")
+       # print("file not found checked")
         if os.path.isdir(dir_path):
             if not os.listdir(dir_path):
                 raise FileNotFoundError(
@@ -111,7 +111,7 @@ def validate_dir(dir_path, src=True):
             raise FileNotFoundError(
                 'Source directory {} not found.'.format(dir_path))
     else:
-        print("file not found checked")
+        # print("file not found checked")
         if os.path.isdir(dir_path):
             if os.listdir(dir_path):
                 warnings.warn(
@@ -150,13 +150,6 @@ def validate_file_names(img_src, ann_src):
     # for some reason gloc is adding \\ instead of / on windows
     imgs = [i.replace('\\', '/') for i in imgs]
     anns = [a.replace('\\', '/') for a in imgs]
-    # for debugging
-# =============================================================================
-#     print("object type for imgs :", type(imgs))
-#     print("image source :" , imgs)
-#     print("anns source  :", anns)
-# =============================================================================
-    #sys.exit()
 
     imgs_filter = [True if x.split(
         '.')[-1].lower() in IMG_FORMAT_LIST else False for x in imgs]
@@ -164,9 +157,7 @@ def validate_file_names(img_src, ann_src):
     
     imgs = [x.split('/')[-1].split('.')[-2] for x in imgs]
     anns = [x.split('/')[-1].split('.')[-2] for x in anns]
-    
-    # print("this is image name :", imgs)
-    # print("this is annotation name :" , anns)
+    # print("validate files")
 
     if not (imgs == anns):
         raise Exception(
@@ -307,6 +298,8 @@ def save_before_after_map_csv(mapper, path):
 
 
 def extract_from_xml(file):
+    
+    print("files type: ", type(file))
     """Extracts useful info (classes, bounding boxes, filename etc.) from annotation (XML) file.
 
     Parameters
@@ -322,6 +315,8 @@ def extract_from_xml(file):
     """
     objects = []
     tree = ET.parse(file)
+    #breakpoint()
+
     root = tree.getroot()
     for obj in root.findall('object'):
         name = obj.find('name').text
